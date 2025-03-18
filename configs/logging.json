@@ -1,0 +1,67 @@
+{
+	"version":1,
+	"disable_existing_loggers": false,
+	"formatters":{
+		"formatter":{
+			"format":"%(asctime)s %(name)s %(levelname)s %(message)s",
+			"datefmt":"%Y-%m-%d %H:%M:%S"
+		},
+		"stdoutFormatter":{
+			"format":"%(name)s %(levelname)s %(message)s",
+			"datefmt":"%Y-%m-%d %H:%M:%S"
+		}
+	},
+	"handlers":{
+		"stream_handler":{
+			"class":"logging.StreamHandler",
+			"level":"INFO",
+			"formatter":"stdoutFormatter",
+			"stream":"ext://sys.stdout"
+		},
+		"file_handler":{
+			"class":"concurrent_log_handler.ConcurrentRotatingFileHandler",
+			"level":"DEBUG",
+			"formatter":"formatter",
+			"filename":"./logs/logfile_concurrent.log",
+			"mode":"a",
+			"maxBytes":2097152,
+			"backupCount":5,
+			"encoding":"utf-8"
+		},
+		"analytics_handler":{
+			"class":"concurrent_log_handler.ConcurrentRotatingFileHandler",
+			"level":"DEBUG",
+			"formatter":"formatter",
+			"filename":"./logs/analytics_concurrent.log",
+			"mode":"a",
+			"maxBytes":2097152,
+			"backupCount":5,
+			"encoding":"utf-8"
+		},
+		"error_handler":{
+			"class":"concurrent_log_handler.ConcurrentRotatingFileHandler",
+			"level":"ERROR",
+			"formatter":"formatter",
+			"filename":"./logs/error_concurrent.log",
+			"mode":"a",
+			"maxBytes":2097152,
+			"backupCount":5,
+			"encoding":"utf-8"
+		}
+	},
+	"root":{
+		"level":"DEBUG",
+		"handlers":[
+			"stream_handler",
+			"file_handler",
+			"error_handler"
+		]
+	},
+	"loggers":{
+		"analytics":{
+			"handlers":["analytics_handler"],
+			"level":"DEBUG",
+			"propagate":false
+		}
+	}
+}
