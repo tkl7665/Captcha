@@ -1,0 +1,7 @@
+./trainingdata/V_c_input04.jpg
+./trainingdata/V_c_input13.jpg
+./trainingdata/V_c_input18.jpg
+./trainingdata/V_c_input19.jpg
+./trainingdata/V_c_input21.jpg
+./trainingdata/V_c_input23.jpg
+./trainingdata/V_c_input24.jpg

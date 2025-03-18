@@ -1,0 +1,1 @@
+./trainingdata/N_c_input08.jpg

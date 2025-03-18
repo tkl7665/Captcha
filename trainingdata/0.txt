@@ -1,0 +1,2 @@
+./trainingdata/0_c_input17.jpg
+./trainingdata/0_c_input18.jpg

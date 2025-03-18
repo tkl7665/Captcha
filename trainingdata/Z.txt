@@ -1,0 +1,5 @@
+./trainingdata/Z_c_input07.jpg
+./trainingdata/Z_c_input09.jpg
+./trainingdata/Z_c_input10.jpg
+./trainingdata/Z_c_input13.jpg
+./trainingdata/Z_c_input20.jpg
