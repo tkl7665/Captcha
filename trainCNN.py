@@ -1,10 +1,11 @@
 import torch
-from torch.utils.data import DataLoader,Dataset
+from torch.utils.data import DataLoader,Dataset,WeightedRandomSampler
 from torchvision import transforms,datasets
 
 from PIL import Image
 from classes.cnnModel import CharClassifier
 
+import numpy as np
 from init import *
 
 tdata='./trainingdata/singleChar/'
@@ -26,13 +27,26 @@ def cnnSetup(trainingData):
 		transform=transform,
 	)
 
-	trainSize=int(0.8*len(idata))
+	trainSize=int(0.9*len(idata))
 	valSize=len(idata)-trainSize
 
 	trainData,valData=torch.utils.data.random_split(idata,[trainSize,valSize])
-	batchSize=32
 
-	trainLoader=DataLoader(trainData,batch_size=batchSize,shuffle=True)
+	trainIdx=trainData.indices
+	trainLabels=[idata.targets[i] for i in trainIdx]
+
+	classCount=np.bincount(trainLabels)
+	numClasses=len(classCount)
+	log.info(f'Class count: {classCount} Num classes: {numClasses}')
+
+	classCount=np.where(classCount==0,1,classCount)
+	classWeights=1.0/torch.tensor(classCount,dtype=torch.float)
+
+	sampleWeights=[classWeights[l] for l in trainLabels]
+	sampler=WeightedRandomSampler(sampleWeights,len(trainLabels),replacement=True)
+
+	batchSize=32
+	trainLoader=DataLoader(trainData,batch_size=batchSize,shuffle=False,sampler=sampler)
 	valLoader=DataLoader(valData,batch_size=batchSize,shuffle=True)
 
 	return trainLoader,valLoader,idata
