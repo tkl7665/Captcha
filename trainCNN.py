@@ -89,26 +89,20 @@ def cnnTrain(numClasses,trainLoader,valLoader):
 	
 	return model
 
-def getCNNClassifier(idir):
-	log.info(f'Training model from {idir}')
-	trainLoader,valLoader,data=cnnSetup(idir)
+def loadCNNClassifier(idir='./models/'):
+	#to add in exception handling if possible
+	with open(f'{idir}/classIndex.json',mode='r',encoding='utf-8') as i:
+		classIdx=json.load(i)
 
-	classIdx=data.class_to_idx
-	log.info(f'Class index: {classIdx}')
-
-	model=cnnTrain(len(classIdx),trainLoader,valLoader)
-	return model
-
-def loadCNNClassifier(idir='./models/',numClasses=36):
-	model=CharClassifier(numClasses)
+	model=CharClassifier(len(classIdx))
 	model.load_state_dict(torch.load('{idir}/cnnModel.pth'))
 
 	device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 	model=model.to(device)
 
-	return model
+	return model,classIdx
 
-def cnnPredict(model,img):
+def cnnPredict(model,classIdx,img):
 	device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 	transform=cnnTransform()
 
@@ -120,22 +114,36 @@ def cnnPredict(model,img):
 		o=model(img)
 		_,predicted=torch.max(o,1)
 
-	return predicted.item()
+	label=[k for k,v in classIdx.items() if v==predicted.item()]
+	return label
+
+def saveModel(model,classIdx,odir):
+	torch.save(model,f'{odir}/cnnModel.pth')
+	with open(f'{odir}/classIndex.json',mode='w',encoding='utf-8') as o:
+		json.dump(classIdx,o)
+
+def getCNNClassifier(idir):
+	log.info(f'Training model from {idir}')
+	trainLoader,valLoader,data=cnnSetup(idir)
+
+	classIdx=data.class_to_idx
+	log.info(f'Class index: {classIdx}')
+
+	model=cnnTrain(len(classIdx),trainLoader,valLoader)
+	return model,classIdx
 
 def main(idir,odir):
-	model=getCNNClassifier(idir)
+	model,classIdx=getCNNClassifier(idir)
 	#latest model will save within models folder
-	torch.save(model,f'{odir}/cnnModel.pth')
+	saveModel(model,classIdx,odir)
 
+    #save model within guid folder
 	odir=f'{odir}/{guid}/'
-	os.makedirs(odir,exist_ok=True)
-	torch.save(model,f'{odir}/cnnModel.pth')
+	saveModel(model,classIdx,odir)
 
 	return model
 
 if __name__ == "__main__":
 	log.info(f'Running training {guid}')
-
-	#trainCNN(trainingData)
 	main(tdata,'./models/')
 	log.info(f'Training completed {guid}')
