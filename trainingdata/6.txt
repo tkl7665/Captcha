@@ -1,3 +1,3 @@
-./trainingdata/6_c_input02.jpg
-./trainingdata/6_c_input03.jpg
-./trainingdata/6_c_input21.jpg
+./trainingdata/singleChar//6//6_c_input02.jpg
+./trainingdata/singleChar//6//6_c_input03.jpg
+./trainingdata/singleChar//6//6_c_input21.jpg

@@ -1,5 +1,5 @@
-./trainingdata/2_c_input03.jpg
-./trainingdata/2_c_input04.jpg
-./trainingdata/2_c_input15.jpg
-./trainingdata/2_c_input16.jpg
-./trainingdata/2_c_input17.jpg
+./trainingdata/singleChar//2//2_c_input03.jpg
+./trainingdata/singleChar//2//2_c_input04.jpg
+./trainingdata/singleChar//2//2_c_input15.jpg
+./trainingdata/singleChar//2//2_c_input16.jpg
+./trainingdata/singleChar//2//2_c_input17.jpg

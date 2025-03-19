@@ -1,1 +1,1 @@
-./trainingdata/8_c_input19.jpg
+./trainingdata/singleChar//8//8_c_input19.jpg

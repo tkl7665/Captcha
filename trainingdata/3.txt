@@ -1,2 +1,2 @@
-./trainingdata/3_c_input01.jpg
-./trainingdata/3_c_input09.jpg
+./trainingdata/singleChar//3//3_c_input01.jpg
+./trainingdata/singleChar//3//3_c_input09.jpg

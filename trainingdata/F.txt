@@ -1,1 +1,1 @@
-./trainingdata/F_c_input24.jpg
+./trainingdata/singleChar//F//F_c_input24.jpg

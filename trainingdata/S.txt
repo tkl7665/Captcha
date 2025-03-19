@@ -1,4 +1,4 @@
-./trainingdata/S_c_input08.jpg
-./trainingdata/S_c_input09.jpg
-./trainingdata/S_c_input14.jpg
-./trainingdata/S_c_input15.jpg
+./trainingdata/singleChar//S//S_c_input08.jpg
+./trainingdata/singleChar//S//S_c_input09.jpg
+./trainingdata/singleChar//S//S_c_input14.jpg
+./trainingdata/singleChar//S//S_c_input15.jpg

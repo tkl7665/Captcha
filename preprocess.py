@@ -21,11 +21,16 @@ def generateSingleFile(fname,label,odir):
 
 		x=0
 		img=Image.open(f'{odir}/{fname}')
+
+		ofolder=f'{odir}/singleChar/'
 		for v in values:
 			cimg=img.crop((x,0,x+8,img.height))
 			x+=9
 
-			ofile=f'{odir}/{v}_{fname}'
+			sfolder=f'{ofolder}/{v}/'
+			os.makedirs(sfolder,exist_ok=True)
+
+			ofile=f'{sfolder}/{v}_{fname}'
 			cimg.save(ofile)
 
 			with open(f'{odir}/{v}.txt',mode='a+',encoding='utf-8') as o:
