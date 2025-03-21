@@ -1,4 +1,8 @@
 from PIL import Image
+import numpy as np
+import cv2
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 from init import *
 
 def cropImage(fname,idir,odir):
@@ -50,6 +54,48 @@ def cropAlImages(idir,odir,sodir):
 				log.warning(f'{f} not found')
 		else:
 			log.debug(f'{f} not an image file')
+
+def getAugmentPipeline():
+	pipeline=A.Compose([
+		A.RandomBrightnessContrast(
+			brightness_limit=(-0.1,0.1),
+			contrast_limit=(-0.1,0.1),
+			p=0.05
+		),
+		A.GaussNoise(
+			var_limit=(5.0,10.0),
+			p=0.2
+		),
+		A.PixelDropout(
+			dropout_prob=0.01,
+			per_channel=False,
+			p=0.25
+		),
+		A.Normalize(mean=[0.5],std=[0.5]),
+		ToTensorV2()
+	])
+
+	return pipeline
+
+def augmentImage(ifile,pipeline,ofile):
+	img=cv2.imread(ifile)
+	aimg=np.array(pipeline(image=img)['image'])
+
+	aimg=np.transpose(aimg,(1,2,0))
+	aimg=(aimg*255).astype(np.uint8)
+	cv2.imwrite(ofile,aimg)
+
+def triggerAugment(idir,tCount=100):
+	pipeline=getAugmentPipeline()
+
+	for f in os.listdir(idir):
+		ifolder=f'{idir}/{f}'
+		#count number of files in the folder
+		o=os.listdir(ifolder)
+		for i in range(tCount-len(o)):
+			ifile=f'{ifolder}/{o[0]}'
+			ofile=f'{ifolder}/{f}_aug_{i}.jpg'
+			augmentImage(ifile,pipeline,ofile)
 
 if __name__ == "__main__":
 	log.info(f'Running preprocessing {guid}')
