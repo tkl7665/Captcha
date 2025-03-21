@@ -94,8 +94,8 @@ def loadCNNClassifier(idir='./models/'):
 	with open(f'{idir}/classIndex.json',mode='r',encoding='utf-8') as i:
 		classIdx=json.load(i)
 
-	model=CharClassifier(len(classIdx))
-	model.load_state_dict(torch.load('{idir}/cnnModel.pth'))
+	#model=CharClassifier(len(classIdx))
+	model=torch.load(f'{idir}/cnnModel.pth',weights_only=False)
 
 	device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 	model=model.to(device)
