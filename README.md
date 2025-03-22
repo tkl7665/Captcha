@@ -28,16 +28,6 @@ pip install -r requirements.txt
 
 ### Output
 
-# Tesseract
-As an immediate available algorithm Tesseract was used to extract the text from the captcha images. Read more about Tesseract [here](https://github.com/tesseract-ocr/tesseract).
-
-## Installation
-Download and install Tesseract
-
-- **Windows**: Download the [Tesseract Installer](https://github.com/UB-Mannheim/tesseract/wiki)
-- **Mac**: `brew install tesseract`
-- **Linux**: `sudo apt install tesseract-ocr`om
-
 # CNN Model
 A Convolutional Neural Network (CNN) model was trained on the given samples to classify the characters within the Captcha images. The model commited within the code was trained without a GPU on augmented data due to the limited number of samples provided.
 
@@ -101,6 +91,25 @@ Due to the limited number and unbalance between the number of samples for each c
     - p=0.25
 
 Including the original samples a total of 100 augmented samples were generated for each character.
+
+# Tesseract
+As an immediate available algorithm Tesseract was used to extract the text from the captcha images. Read more about Tesseract [here](https://github.com/tesseract-ocr/tesseract).
+
+## Configuration
+- psm 10: Treat each cropped region as a single character
+- oem 3: Use the defa ult OCR engine
+- tessedit_char_whitelist: Limit the characters to be recognized to uppercase alphabets and numerals
+
+```bash
+--psm 10 --oem 3 -c tessedit_char_whitelist=ABCDEFGHIJLKMNOPQRSTUVWXYZ0123456789
+```
+
+## Installation
+Download and install Tesseract
+
+- **Windows**: Download the [Tesseract Installer](https://github.com/UB-Mannheim/tesseract/wiki)
+- **Mac**: `brew install tesseract`
+- **Linux**: `sudo apt install tesseract-ocr`om
 
 # Future Areas of Work
 - Leverage OpenCV to detect the contours of the characters within the Captcha and extract it out as an individual region

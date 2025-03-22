@@ -13,7 +13,6 @@ class Captcha(object):
 		self.cidx=cidx
 
 		log.info(f'Loaded CNN model with {cidx}')
-		#self.ocr=OCR()
 
 	def __call__(self,im_path,save_path):
 		'''
@@ -23,8 +22,8 @@ class Captcha(object):
 			save_path: output file path to save the one-line outcome
 		'''
 		if os.path.exists(im_path):
-			otext=ocrImage(im_path)
 			ptext=self.runCNN(im_path)
+			otext=ocrImage(im_path) if checkTesseract() else ptext
 
 			if otext==ptext:
 				text=otext
@@ -92,3 +91,6 @@ class Captcha(object):
 			save_path=None
 
 		return lfiles
+
+if __name__=='__main__':
+	c=Captcha()
