@@ -135,7 +135,7 @@ A total of twenty-five samples was provided where each sample was a 5-character 
 - Crop image to remove white space surrounding the characters
 - Split the image into 5 individual characters
 - Below is the distribution of the number of training samples for each character based on the twenty five input samples. A total of 125 samples where spread across the 36 character
-- Character 'E' and 'O' have the highest number of samples at 6 each while 'F', 'N', 'P' have the lowest number of samples at 1 each. Given the shape and structure of 'E" and 'O' training directly on just the given samples wouuld not be sufficient as other characters like '0', 'B', 'F', and 'P' could easily be misclassified as 'O' and 'E' respectively.
+- Character 'V' has the highest number of samples at 7, while 'E' and 'O' have the next highest number of samples at 6 each while '8', 'F', 'N', 'P' have the lowest number of samples at 1 each. Given the shape and structure of 'E" and 'O' training directly on just the given samples wouuld not be sufficient as other characters like '0', 'B', 'F', and 'P' could easily be misclassified as 'O' and 'E' respectively.
 
 | Character | Count | | Character |Count  | |Character | Count | |Character | Count |
 |-----------|-------|-|-----------|-------|-|----------|-------|-|----------|-------|
