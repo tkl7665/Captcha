@@ -38,9 +38,48 @@ A total of 25 samples was provided where each sample was a 5-character captcha i
 ### Preprocessing
 - Crop image to remove white space surrounding the characters
 - Split the image into 5 individual characters
-- Below is the distribution of the number of training samples for each character based on the twenty five input samples
+- Below is the distribution of the number of training samples for each character based on the twenty five input samples. A total of 125 samples where spread across the 36 character
+- Character 'E' and 'O' have the highest number of samples at 6 each while 'F', 'N', 'P' have the lowest number of samples at 1 each. Given the shape and structure of 'E" and 'O' training directly on just the given samples wouuld not be sufficient as other characters like '0', 'B', 'F', and 'P' could easily be misclassified as 'O' and 'E' respectively.
 
-//need to write
+| Character | Count |
+|-----------|-------|
+| 0         | 2     |
+| 1         | 5     |
+| 2         | 5     |
+| 3         | 2     |
+| 4         | 2     |
+| 5         | 3     |
+| 6         | 3     |
+| 7         | 4     |
+| 8         | 1     |
+| 9         | 5     |
+| A         | 4     |
+| B         | 3     |
+| C         | 5     |
+| D         | 5     |
+| E         | 6     |
+| F         | 1     |
+| G         | 5     |
+| H         | 4     |
+| I         | 2     |
+| J         | 3     |
+| K         | 3     |
+| L         | 3     |
+| M         | 5     |
+| N         | 1     |
+| O         | 6     |
+| P         | 1     |
+| Q         | 5     |
+| R         | 3     |
+| S         | 4     |
+| T         | 2     |
+| U         | 2     |
+| V         | 7     |
+| W         | 4     |
+| X         | 2     |
+| Y         | 2     |
+| Z         | 5     |
+|-----------|-------|
 
 ### Augmentation
 Due to the limited number and unbalance between the number of samples for each character, data augmentation was performed to increase the number of training samples. The following augmentation techniques were used leveraging the Albumentations library
