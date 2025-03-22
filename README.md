@@ -33,7 +33,7 @@ pip install -r requirements.txt
 # CNN Model
 
 ## Data
-A total of 25 samples was provided where each sample was a 5-character captcha image. The images were can be found within the samples/input folder.
+A total of twenty-five samples was provided where each sample was a 5-character captcha image. The images were can be found within the samples/input folder.
 
 ### Preprocessing
 - Crop image to remove white space surrounding the characters
@@ -79,22 +79,21 @@ A total of 25 samples was provided where each sample was a 5-character captcha i
 | X         | 2     |
 | Y         | 2     |
 | Z         | 5     |
-|-----------|-------|
 
 ### Augmentation
 Due to the limited number and unbalance between the number of samples for each character, data augmentation was performed to increase the number of training samples. The following augmentation techniques were used leveraging the Albumentations library
 
 - RandomBrightnessContrast
-    -- (brightness_limit=(-0.1,0.1)
-    -- (contrast_limit=(-0.1,0.1)
-    -- p=0.05
+    - (brightness_limit=(-0.1,0.1)
+    - (contrast_limit=(-0.1,0.1)
+    - p=0.05
 - GaussNoise
-    -- var_limit=(5.0,10.0)
-    -- p=0.2
+    - var_limit=(5.0,10.0)
+    - p=0.2
 - PixelDropout
-    -- dropout_prob=0.01
-    -- per_channel=False
-    -- p=0.25
+    - dropout_prob=0.01
+    - per_channel=False
+    - p=0.25
 
 Including the original samples a total of 100 augmented samples were generated for each character.
 
