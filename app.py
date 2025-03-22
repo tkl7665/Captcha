@@ -1,17 +1,19 @@
 from PIL import Image
-from ocr import ocrImage
+from ocr import ocrImage,checkTesseract
 from trainCNN import *
 
 from init import *
 
-DEFAULT='OCR'
+log=logging.getLogger(__name__)
+
+DEFAULT='CNN'
 
 class Captcha(object):
 	def __init__(self):
+		log.info('Initializing CNN model...')
 		m,cidx=loadCNNClassifier()
 		self.model=m
 		self.cidx=cidx
-
 		log.info(f'Loaded CNN model with {cidx}')
 
 	def __call__(self,im_path,save_path):
@@ -59,6 +61,7 @@ class Captcha(object):
 		return ''.join(pred)
 
 	def cropImage(self,ifile,odir='./output/'):
+		global OFILE_LIST
 		if os.path.exists(ifile):
 			fname=os.path.basename(ifile)
 			img=Image.open(ifile)
@@ -66,14 +69,18 @@ class Captcha(object):
 
 			os.makedirs(odir,exist_ok=True)
 			ofile=f'{odir}/{guid}_{fname}'
+
 			cimg.save(ofile)
+			OFILE_LIST.append(ofile)
 		else:
 			ofile=None
 
 		return ofile
 
 	def cropLetters(self,ifile,odir='./output/',length=5):
+		global OFILE_LIST
 		lfiles=[]
+
 		if os.path.exists(ifile):
 			img=Image.open(ifile)
 			x=0
@@ -86,11 +93,78 @@ class Captcha(object):
 
 				ofile=f'{odir}/{guid}_{i}_{fname}'
 				cimg.save(ofile)
+
 				lfiles.append(ofile)
+				OFILE_LIST.append(ofile)
 		else:
 			save_path=None
 
 		return lfiles
 
+def initalize():
+	log.info('Initializing...')
+
+	log.info('Checking Tesseract...')
+	tcheck=checkTesseract()
+
+	log.info(f'Tesseract: {tcheck}')
+	DEFAULT='OCR' if checkTesseract() else 'CNN'
+	log.info(f'Default: {DEFAULT}')
+
+def changeDefault():
+	global DEFAULT
+	choice=input('Enter 1 for OCR, 2 for CNN:').lower().strip()
+
+	if choice=='1':
+		DEFAULT='OCR'
+	elif choice=='2':
+		DEFAULT='CNN'
+	else:
+		log.info('Invalid choice')
+	log.info(f'Updated Default: {DEFAULT}')
+
+def interactiveMode(odir):
+	try:
+		initalize()
+		c=Captcha()
+		odir=f'{odir}/{guid}'
+
+		os.makedirs(odir,exist_ok=True)
+		fpath=os.path.abspath(odir).replace('\\','/')
+
+		log.info(f'Saving Predictions at: {fpath}')
+
+		run=0
+		ifile=input(f'Enter image path (0 to quit <{DEFAULT}>): ').lower().strip()
+		while ifile!='0':
+			if len(ifile)>0:
+				if ifile!='d':
+					if os.path.exists(ifile):
+						if os.path.isfile(ifile):
+							if ifile.endswith('.jpg'):
+								run+=1
+								ofile=f'{odir}/prediction_{run}.txt'
+
+								r=c(ifile,ofile)
+								log.info(f'{r} written to {ofile}')
+							else:
+								log.info('Only JPG files are supported')
+						else:
+							log.info(f'{ifile} is not a file')
+					else:
+						log.warning(f'{ifile} not found')
+				else:
+					log.info(f'Current Default is {DEFAULT}')
+					changeDefault()
+			else:
+				log.info('Empty input')
+
+			ifile=input(f'Enter image path (0 to quit <{DEFAULT}>): ').lower().strip()
+
+	except Exception as e:
+		log.error(f'Error: {e}')
+
+	log.info('Exiting...')
+
 if __name__=='__main__':
-	c=Captcha()
+	interactiveMode('./output/')
