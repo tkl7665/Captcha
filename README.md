@@ -110,6 +110,13 @@ A Convolutional Neural Network (CNN) model was trained on the given samples to c
 Read more about CNN [here](https://en.wikipedia.org/wiki/Convolutional_neural_network) and [here](https://www.datacamp.com/tutorial/introduction-to-convolutional-neural-networks-cnns).
 
 ### Training
+The latest trained model would be saved in the folder specified while a copy would also be created as a sub-folder for tracking purposes. This is to ensure all versions of trained models are kept for tracking purposes. Future work would be to integrate this with MLOps solution.
+
+trainCNN.py
+```python
+main(<training data folder>,<folder to save model>)
+```
+
 The CNN model was designed with a simple structure and trained for 10 epochs with learning rate of 0.001:
 
 Input Layer (Grayscale Image)  
@@ -132,6 +139,10 @@ Input Layer (Grayscale Image)
 A total of twenty-five samples was provided where each sample was a 5-character captcha image. The images were can be found within the samples/input folder.
 
 #### Preprocessing 🔧
+Code is kept in preprocessing.py
+```python
+cropAllImages(<input folder>,<output folder>,<label folder>)
+```
 - Crop image to remove white space surrounding the characters
 - Split the image into 5 individual characters
 - Below is the distribution of the number of training samples for each character based on the twenty five input samples. A total of 125 samples where spread across the 36 character
@@ -150,7 +161,6 @@ A total of twenty-five samples was provided where each sample was a 5-character 
 | 8         | 1     | | I         | 2     | | S        | 4     |
 | 9         | 5     | | J         | 3     | | T        | 2     |
 
-
 #### Augmentation 🔄
 Due to the limited number and unbalance between the number of samples for each character, data augmentation was performed to increase the number of training samples. The following augmentation techniques were used leveraging the Albumentations library
 
@@ -167,6 +177,7 @@ Due to the limited number and unbalance between the number of samples for each c
     - p=0.25
 
 Including the original samples a total of 100 augmented samples were generated for each character.
+All training images can be found under ./trainingdata/singleChar_Augment
 
 ## Tesseract 👁️
 As an immediate available algorithm Tesseract was used to extract the text from the captcha images. Read more about Tesseract [here](https://github.com/tesseract-ocr/tesseract).
@@ -193,3 +204,4 @@ Download and install Tesseract
 - Flexibility in handling images with different number of characters returned
 - Generation of synthetic test & validation data for accuracy
 - Connecting with platforms like weights and biases (wand) for MLOPs which would provide better model version handling and loading
+- Alternative OCR services like AWS Textract would also provide additional options

@@ -42,7 +42,7 @@ def generateSingleFile(fname,label,odir):
 	else:
 		log.warning(f'{label} not found')
 
-def cropAlImages(idir,odir,sodir):
+def cropAllImages(idir,odir,sodir):
 	for f in os.listdir(idir):
 		if f.endswith('.jpg') or f.endswith('.JPG'):
 			ofile=cropImage(f,idir,odir)
@@ -99,4 +99,4 @@ def triggerAugment(idir,tCount=100):
 
 if __name__ == "__main__":
 	log.info(f'Running preprocessing {guid}')
-	cropAlImages('./samples/input/','./trainingdata','./samples/output')
+	cropAllImages('./samples/input/','./trainingdata','./samples/output')
