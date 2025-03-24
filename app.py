@@ -46,6 +46,7 @@ class Captcha(object):
 		with open(save_path,mode='w',encoding='utf8') as f:
 			f.write(text)
 
+		log.info(f'Final Result: {text}')
 		return text
 
 	def runCNN(self,ifile,odir='./output/'):
