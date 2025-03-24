@@ -7,6 +7,7 @@ from init import *
 log=logging.getLogger(__name__)
 
 DEFAULT='CNN'
+TESSERACT=False
 
 class Captcha(object):
 	def __init__(self):
@@ -25,15 +26,19 @@ class Captcha(object):
 		'''
 		if os.path.exists(im_path):
 			ptext=self.runCNN(im_path)
-			otext=ocrImage(im_path) if checkTesseract() else ptext
+			otext=ocrImage(im_path) if TESSERACT else ptext
 
-			if otext==ptext:
-				text=otext
-				log.info('OCR and CNN matched')
+			if TESSERACT:
+				if otext==ptext:
+					text=otext
+					log.info('OCR and CNN matched')
+				else:
+					log.info(f'OCR and CNN mismatched: {otext} | {ptext}')
+					log.info(f'Using {DEFAULT} as default')
+					text=otext if DEFAULT=='OCR' else ptext
 			else:
-				log.info(f'OCR and CNN mismatched: {otext} | {ptext}')
-				log.info(f'Using {DEFAULT} as default')
-				text=otext if DEFAULT=='OCR' else ptext
+				text=ptext
+				log.info(f'Using CNN result as Tesseract {TESSERACT}')
 		else:
 			log.warning(f'{im_path} not found')
 			text='N/A'
@@ -102,13 +107,14 @@ class Captcha(object):
 		return lfiles
 
 def initalize():
+	global TESSERACT
 	log.info('Initializing...')
 
 	log.info('Checking Tesseract...')
-	tcheck=checkTesseract()
+	TESSERACT=checkTesseract()
 
-	log.info(f'Tesseract: {tcheck}')
-	DEFAULT='OCR' if checkTesseract() else 'CNN'
+	log.info(f'Tesseract: {TESSERACT}')
+	DEFAULT='OCR' if TESSERACT else 'CNN'
 	log.info(f'Default: {DEFAULT}')
 
 def changeDefault():
