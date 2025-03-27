@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
-from init import *
+from .init import *
 
 def cropImage(fname,idir,odir):
 	ifile=f'{idir}/{fname}'
@@ -99,4 +99,4 @@ def triggerAugment(idir,tCount=100):
 
 if __name__ == "__main__":
 	log.info(f'Running preprocessing {guid}')
-	cropAllImages('./samples/input/','./trainingdata','./samples/output')
+	cropAllImages('./captcha/samples/input/','./captcha/trainingdata','./captcha/samples/output')

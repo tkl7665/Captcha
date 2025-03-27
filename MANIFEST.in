@@ -1,0 +1,2 @@
+include captcha/configs/*
+include captcha/models/*

@@ -1,8 +1,8 @@
 from PIL import Image
-from ocr import ocrImage,checkTesseract
-from trainCNN import *
+from .ocr import ocrImage,checkTesseract
+from .trainCNN import *
 
-from init import *
+from .init import *
 
 log=logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ class Captcha(object):
 		log.info(f'Final Result: {text}')
 		return text
 
-	def runCNN(self,ifile,odir='./output/'):
+	def runCNN(self,ifile,odir='./captcha/output/'):
 		if os.path.exists(ifile):
 			cimg=self.cropImage(ifile,odir)
 			lfiles=self.cropLetters(cimg,odir)
@@ -66,7 +66,7 @@ class Captcha(object):
 
 		return ''.join(pred)
 
-	def cropImage(self,ifile,odir='./output/'):
+	def cropImage(self,ifile,odir='./captcha/output/'):
 		global OFILE_LIST
 		if os.path.exists(ifile):
 			fname=os.path.basename(ifile)
@@ -83,7 +83,7 @@ class Captcha(object):
 
 		return ofile
 
-	def cropLetters(self,ifile,odir='./output/',length=5):
+	def cropLetters(self,ifile,odir='./captcha/output/',length=5):
 		global OFILE_LIST
 		lfiles=[]
 
@@ -174,4 +174,4 @@ def interactiveMode(odir):
 	log.info('Exiting...')
 
 if __name__=='__main__':
-	interactiveMode('./output/')
+	interactiveMode('./captcha/output/')
