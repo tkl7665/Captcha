@@ -89,13 +89,15 @@ def cnnTrain(numClasses,trainLoader,valLoader):
 	
 	return model
 
-def loadCNNClassifier(idir='./captcha/models/'):
+def loadCNNClassifier(idir='captcha.models'):
 	#to add in exception handling if possible
-	with open(f'{idir}/classIndex.json',mode='r',encoding='utf-8') as i:
+	cidxJSON=files(idir)/'classIndex.json'
+	with open(cidxJSON,mode='r',encoding='utf-8') as i:
 		classIdx=json.load(i)
 
 	#model=CharClassifier(len(classIdx))
-	model=torch.load(f'{idir}/cnnModel.pth',weights_only=False)
+	mfile=files(idir)/'cnnModel.pth'
+	model=torch.load(mfile,weights_only=False)
 
 	device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 	model=model.to(device)

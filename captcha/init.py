@@ -2,13 +2,14 @@ import sys,os,uuid,logging,json,time,random
 import atexit,signal
 
 import logging.config
+from importlib.resources import files
 
-ljson='./captcha/configs/logging.json'
-if os.path.exists(ljson):
-	with open(ljson,mode='r',encoding='utf-8') as i:
-		logConfig=json.load(i)
+#ljson='./captcha/configs/logging.json'
+ljson=files('captcha.configs')/'logging.json'
+with open(ljson,mode='r',encoding='utf-8') as i:
+	logConfig=json.load(i)
 
-	logging.config.dictConfig(logConfig)
+logging.config.dictConfig(logConfig)
 
 log=logging.getLogger(__name__)
 
