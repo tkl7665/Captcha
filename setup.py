@@ -4,6 +4,13 @@ setup(
 	name='Captcha',
 	version='1.0.0',
 	packages=find_packages(),
+	include_package_data=True,
+	package_data={
+		'captcha':[
+			'configs/*',
+			'models/*'
+		]
+	},
 	install_requires=[
 		'albucore',
 		'albumentations',

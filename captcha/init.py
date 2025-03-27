@@ -4,10 +4,12 @@ import atexit,signal
 import logging.config
 
 ljson='./captcha/configs/logging.json'
-with open(ljson,mode='r',encoding='utf-8') as i:
-	logConfig=json.load(i)
+if os.path.exists(ljson):
+	with open(ljson,mode='r',encoding='utf-8') as i:
+		logConfig=json.load(i)
 
-logging.config.dictConfig(logConfig)
+	logging.config.dictConfig(logConfig)
+
 log=logging.getLogger(__name__)
 
 guid=uuid.uuid4().hex[:4]
