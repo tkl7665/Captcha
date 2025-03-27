@@ -4,13 +4,23 @@ import atexit,signal
 import logging.config
 from importlib.resources import files
 
-#ljson='./captcha/configs/logging.json'
 ljson=files('captcha.configs')/'logging.json'
 with open(ljson,mode='r',encoding='utf-8') as i:
 	logConfig=json.load(i)
 
-logging.config.dictConfig(logConfig)
+log_dir='logs'
 
+if not os.path.exists(log_dir):
+	os.makedirs(log_dir)
+
+for handler in logConfig['handlers'].values():
+	if 'filename' in handler:
+		handler['filename']=os.path.join(
+			log_dir,
+			os.path.basename(handler['filename'])
+		)
+
+logging.config.dictConfig(logConfig)
 log=logging.getLogger(__name__)
 
 guid=uuid.uuid4().hex[:4]
