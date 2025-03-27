@@ -1,9 +1,14 @@
+import os
+
 from PIL import Image
 import numpy as np
 import cv2
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
-from .init import *
+
+from configs.shared import GUID
+from configs.logging import get_logger
+log=get_logger(__name__)
 
 def cropImage(fname,idir,odir):
 	ifile=f'{idir}/{fname}'
@@ -98,5 +103,5 @@ def triggerAugment(idir,tCount=100):
 			augmentImage(ifile,pipeline,ofile)
 
 if __name__ == "__main__":
-	log.info(f'Running preprocessing {guid}')
+	log.info(f'Running preprocessing {GUID}')
 	cropAllImages('./captcha/samples/input/','./captcha/trainingdata','./captcha/samples/output')

@@ -1,10 +1,17 @@
+import os
+
 from PIL import Image
-from .ocr import ocrImage,checkTesseract
-from .trainCNN import *
 
-from .init import *
+from configs.shared import GUID
+from configs.cleanup import CleanUpManager
+from configs.logging import get_logger
+from configs.cleanup import CleanUpManager
 
-log=logging.getLogger(__name__)
+from ocr import ocrImage,checkTesseract
+from trainCNN import loadCNNClassifier,cnnPredict
+
+cleanup_mgr=CleanUpManager()
+log=get_logger(__name__)
 
 DEFAULT='CNN'
 TESSERACT=False
@@ -18,8 +25,7 @@ class Captcha(object):
 		log.info(f'Loaded CNN model with {cidx}')
 
 	def __call__(self,im_path,save_path):
-		'''
-		Algo for inference
+		'''Algo for inference
 		args:
 			im_path: .jpg image path to load and to infer
 			save_path: output file path to save the one-line outcome
@@ -67,24 +73,22 @@ class Captcha(object):
 		return ''.join(pred)
 
 	def cropImage(self,ifile,odir='./captcha/output/'):
-		global OFILE_LIST
 		if os.path.exists(ifile):
 			fname=os.path.basename(ifile)
 			img=Image.open(ifile)
 			cimg=img.crop((5,11,49,21))
 
 			os.makedirs(odir,exist_ok=True)
-			ofile=f'{odir}/{guid}_{fname}'
+			ofile=f'{odir}/{GUID}_{fname}'
 
 			cimg.save(ofile)
-			OFILE_LIST.append(ofile)
+			cleanup_mgr.add_temp_file(ofile)
 		else:
 			ofile=None
 
 		return ofile
 
 	def cropLetters(self,ifile,odir='./captcha/output/',length=5):
-		global OFILE_LIST
 		lfiles=[]
 
 		if os.path.exists(ifile):
@@ -97,18 +101,17 @@ class Captcha(object):
 				cimg=img.crop((x,0,x+8,img.height))
 				x+=9
 
-				ofile=f'{odir}/{guid}_{i}_{fname}'
+				ofile=f'{odir}/{GUID}_{i}_{fname}'
 				cimg.save(ofile)
 
 				lfiles.append(ofile)
-				OFILE_LIST.append(ofile)
+				cleanup_mgr.add_temp_file(ofile)
 		else:
 			save_path=None
 
 		return lfiles
 
 def initalize():
-	global TESSERACT
 	log.info('Initializing...')
 
 	log.info('Checking Tesseract...')
@@ -134,7 +137,7 @@ def interactiveMode(odir):
 	try:
 		initalize()
 		c=Captcha()
-		odir=f'{odir}/{guid}'
+		odir=f'{odir}/{GUID}'
 
 		os.makedirs(odir,exist_ok=True)
 		fpath=os.path.abspath(odir).replace('\\','/')
@@ -174,4 +177,4 @@ def interactiveMode(odir):
 	log.info('Exiting...')
 
 if __name__=='__main__':
-	interactiveMode('./captcha/output/')
+	interactiveMode('./output/')

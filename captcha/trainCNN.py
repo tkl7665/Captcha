@@ -1,13 +1,22 @@
+import os
+import json
+from importlib.resources import files
+
 import torch
 from torch.utils.data import DataLoader,Dataset
 from torchvision import transforms,datasets
 
 from PIL import Image
-from .classes.cnnModel import CharClassifier
 
-from .init import *
+from configs.shared import GUID
+from configs.cleanup import CleanUpManager
 
-tdata='./captcha/trainingdata/singleChar_Augment/'
+from classes.cnnModel import CharClassifier
+
+tdata='./trainingdata/singleChar_Augment/'
+
+from configs.logging import get_logger
+log=get_logger(__name__)
 
 def cnnTransform():
 	transform=transforms.Compose([
@@ -92,11 +101,12 @@ def cnnTrain(numClasses,trainLoader,valLoader):
 def loadCNNClassifier(idir='captcha.models'):
 	#to add in exception handling if possible
 	cidxJSON=files(idir)/'classIndex.json'
+	log.info(f'loading from {cidxJSON}')
 	with open(cidxJSON,mode='r',encoding='utf-8') as i:
 		classIdx=json.load(i)
 
-	#model=CharClassifier(len(classIdx))
 	mfile=files(idir)/'cnnModel.pth'
+	log.info(f'loading from {mfile}')
 	model=torch.load(mfile,weights_only=False)
 
 	device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -140,13 +150,13 @@ def main(idir,odir):
 	saveModel(model,classIdx,odir)
 
     #save model within guid folder
-	odir=f'{odir}/{guid}/'
+	odir=f'{odir}/{GUID}/'
 	os.makedirs(odir,exist_ok=True)
 	saveModel(model,classIdx,odir)
 
 	return model
 
 if __name__ == "__main__":
-	log.info(f'Running training {guid}')
+	log.info(f'Running training {GUID}')
 	main(tdata,'./captcha/models/')
-	log.info(f'Training completed {guid}')
+	log.info(f'Training completed {GUID}')
