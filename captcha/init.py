@@ -3,7 +3,7 @@ import atexit,signal
 
 import logging.config
 
-ljson='./configs/logging.json'
+ljson='./captcha/configs/logging.json'
 with open(ljson,mode='r',encoding='utf-8') as i:
 	logConfig=json.load(i)
 

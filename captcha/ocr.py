@@ -1,7 +1,7 @@
 import cv2
 import pytesseract
 
-from init import *
+from .init import *
 
 OCR_CONFIG=r'--psm 10 --oem 3 -c tessedit_char_whitelist=ABCDEFGHIJLKMNOPQRSTUVWXYZ0123456789'
 

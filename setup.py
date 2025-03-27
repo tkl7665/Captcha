@@ -1,0 +1,42 @@
+from setuptools import setup,find_packages
+
+setup(
+	name='Captcha',
+	version='1.0.0',
+	packages=find_packages(),
+	install_requires=[
+		'albucore',
+		'albumentations',
+		'annotated-types',
+		'concurrent-log-handler',
+		'filelock',
+		'fsspec',
+		'Jinja2',
+		'MarkupSafe',
+		'mpmath',
+		'networkx',
+		'numpy',
+		'opencv-python',
+		'opencv-python-headless',
+		'packaging',
+		'pillow',
+		'portalocker',
+		'pydantic',
+		'pydantic_core',
+		'pytesseract',
+		'pywin32',
+		'PyYAML',
+		'scipy',
+		'simsimd',
+		'stringzilla',
+		'sympy',
+		'torch',
+		'torchvision',
+		'typing_extensions'
+	],
+	entry_points={
+		'console_scripts':[
+			'captcha=captcha.app:main',
+		],
+	},
+)

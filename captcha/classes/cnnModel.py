@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from init import *
+from ..init import *
 
 class CharClassifier(nn.Module):
 	def __init__(self,numClasses=36):

@@ -3,11 +3,11 @@ from torch.utils.data import DataLoader,Dataset
 from torchvision import transforms,datasets
 
 from PIL import Image
-from classes.cnnModel import CharClassifier
+from .classes.cnnModel import CharClassifier
 
-from init import *
+from .init import *
 
-tdata='./trainingdata/singleChar/'
+tdata='./captcha/trainingdata/singleChar_Augment/'
 
 def cnnTransform():
 	transform=transforms.Compose([
@@ -89,7 +89,7 @@ def cnnTrain(numClasses,trainLoader,valLoader):
 	
 	return model
 
-def loadCNNClassifier(idir='./models/'):
+def loadCNNClassifier(idir='./captcha/models/'):
 	#to add in exception handling if possible
 	with open(f'{idir}/classIndex.json',mode='r',encoding='utf-8') as i:
 		classIdx=json.load(i)
@@ -139,11 +139,12 @@ def main(idir,odir):
 
     #save model within guid folder
 	odir=f'{odir}/{guid}/'
+	os.makedirs(odir,exist_ok=True)
 	saveModel(model,classIdx,odir)
 
 	return model
 
 if __name__ == "__main__":
 	log.info(f'Running training {guid}')
-	main(tdata,'./models/')
+	main(tdata,'./captcha/models/')
 	log.info(f'Training completed {guid}')
