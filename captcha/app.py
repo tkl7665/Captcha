@@ -1,14 +1,17 @@
 import os
+import json
+from importlib.resources import files
 
+import torch
 from PIL import Image
 
-from configs.shared import GUID
-from configs.cleanup import CleanUpManager
-from configs.logging import get_logger
-from configs.cleanup import CleanUpManager
+from captcha.configs.shared import GUID
+from captcha.configs.cleanup import CleanUpManager
+from captcha.configs.logging import get_logger
+from captcha.configs.cleanup import CleanUpManager
 
-from ocr import ocrImage,checkTesseract
-from trainCNN import loadCNNClassifier,cnnPredict
+from captcha.ocr import ocrImage,checkTesseract
+from captcha.trainCNN import cnnTransform
 
 cleanup_mgr=CleanUpManager()
 log=get_logger(__name__)
@@ -19,10 +22,41 @@ TESSERACT=False
 class Captcha(object):
 	def __init__(self):
 		log.info('Initializing CNN model...')
-		m,cidx=loadCNNClassifier()
-		self.model=m
-		self.cidx=cidx
-		log.info(f'Loaded CNN model with {cidx}')
+		self.cidx=None
+		self.model=None
+
+		self.loadCNNClassifier()
+		log.info(f'Loaded CNN model with {self.cidx}')
+
+	def loadCNNClassifier(self,idir='captcha.models'):
+		#to add in exception handling if possible
+		cidxJSON=files(idir)/'classIndex.json'
+		log.info(f'loading from {cidxJSON}')
+		with open(cidxJSON,mode='r',encoding='utf-8') as i:
+			self.cidx=json.load(i)
+
+		mfile=files(idir)/'cnnModel.pth'
+		log.info(f'loading from {mfile}')
+		model=torch.load(mfile,weights_only=False)
+
+		device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+		self.model=model.to(device)
+
+	def cnnPredict(self,img):
+		device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+		transform=cnnTransform()
+
+		img=Image.open(img).convert('L')
+		img=transform(img).unsqueeze(0).to(device)
+
+		self.model.eval()
+		with torch.no_grad():
+			o=self.model(img)
+			_,predicted=torch.max(o,1)
+
+		label=[k for k,v in self.cidx.items() if v==predicted.item()]
+		return label
+
 
 	def __call__(self,im_path,save_path):
 		'''Algo for inference
@@ -67,7 +101,7 @@ class Captcha(object):
 	def predictLetters(self,lfiles):
 		pred=[]
 		for f in lfiles:
-			p=cnnPredict(self.model,self.cidx,f)
+			p=self.cnnPredict(f)
 			pred.append(p[0])
 
 		return ''.join(pred)

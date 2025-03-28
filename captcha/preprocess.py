@@ -6,8 +6,8 @@ import cv2
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
-from configs.shared import GUID
-from configs.logging import get_logger
+from captcha.configs.shared import GUID
+from captcha.configs.logging import get_logger
 log=get_logger(__name__)
 
 def cropImage(fname,idir,odir):

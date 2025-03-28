@@ -1,6 +1,5 @@
 import os
 import json
-from importlib.resources import files
 
 import torch
 from torch.utils.data import DataLoader,Dataset
@@ -8,14 +7,13 @@ from torchvision import transforms,datasets
 
 from PIL import Image
 
-from configs.shared import GUID
-from configs.cleanup import CleanUpManager
+from captcha.configs.shared import GUID
+from captcha.configs.cleanup import CleanUpManager
+from captcha.configs.logging import get_logger
+from captcha.classes.cnnModel import CharClassifier
 
-from classes.cnnModel import CharClassifier
+tdata='./captcha/trainingdata/singleChar_Augment/'
 
-tdata='./trainingdata/singleChar_Augment/'
-
-from configs.logging import get_logger
 log=get_logger(__name__)
 
 def cnnTransform():
@@ -97,37 +95,6 @@ def cnnTrain(numClasses,trainLoader,valLoader):
 		log.info(f'Train Loss: {train_loss:.4f} Val Loss: {val_loss:.4f} Val Acc: {val_acc:.4f}')
 	
 	return model
-
-def loadCNNClassifier(idir='captcha.models'):
-	#to add in exception handling if possible
-	cidxJSON=files(idir)/'classIndex.json'
-	log.info(f'loading from {cidxJSON}')
-	with open(cidxJSON,mode='r',encoding='utf-8') as i:
-		classIdx=json.load(i)
-
-	mfile=files(idir)/'cnnModel.pth'
-	log.info(f'loading from {mfile}')
-	model=torch.load(mfile,weights_only=False)
-
-	device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-	model=model.to(device)
-
-	return model,classIdx
-
-def cnnPredict(model,classIdx,img):
-	device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-	transform=cnnTransform()
-
-	img=Image.open(img).convert('L')
-	img=transform(img).unsqueeze(0).to(device)
-
-	model.eval()
-	with torch.no_grad():
-		o=model(img)
-		_,predicted=torch.max(o,1)
-
-	label=[k for k,v in classIdx.items() if v==predicted.item()]
-	return label
 
 def saveModel(model,classIdx,odir):
 	torch.save(model,f'{odir}/cnnModel.pth')
