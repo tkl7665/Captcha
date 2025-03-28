@@ -31,7 +31,6 @@ setup(
 		'pydantic',
 		'pydantic_core',
 		'pytesseract',
-		'pywin32',
 		'PyYAML',
 		'scipy',
 		'simsimd',
