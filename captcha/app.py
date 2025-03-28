@@ -54,6 +54,10 @@ class Captcha(object):
 			log.warning(f'{im_path} not found')
 			text='N/A'
 
+		dir_path=os.path.dirname(save_path)
+		if dir_path:
+			os.makedirs(dir_path,exist_ok=True)
+
 		with open(save_path,mode='w',encoding='utf8') as f:
 			f.write(text)
 
