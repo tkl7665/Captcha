@@ -1,5 +1,6 @@
 import os
 import json
+import argparse
 from importlib.resources import files
 
 import torch
@@ -27,36 +28,6 @@ class Captcha(object):
 
 		self.loadCNNClassifier()
 		log.info(f'Loaded CNN model with {self.cidx}')
-
-	def loadCNNClassifier(self,idir='captcha.models'):
-		#to add in exception handling if possible
-		cidxJSON=files(idir)/'classIndex.json'
-		log.info(f'loading from {cidxJSON}')
-		with open(cidxJSON,mode='r',encoding='utf-8') as i:
-			self.cidx=json.load(i)
-
-		mfile=files(idir)/'cnnModel.pth'
-		log.info(f'loading from {mfile}')
-		model=torch.load(mfile,weights_only=False)
-
-		device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-		self.model=model.to(device)
-
-	def cnnPredict(self,img):
-		device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-		transform=cnnTransform()
-
-		img=Image.open(img).convert('L')
-		img=transform(img).unsqueeze(0).to(device)
-
-		self.model.eval()
-		with torch.no_grad():
-			o=self.model(img)
-			_,predicted=torch.max(o,1)
-
-		label=[k for k,v in self.cidx.items() if v==predicted.item()]
-		return label
-
 
 	def __call__(self,im_path,save_path):
 		'''Algo for inference
@@ -88,6 +59,35 @@ class Captcha(object):
 
 		log.info(f'Final Result: {text}')
 		return text
+
+	def loadCNNClassifier(self,idir='captcha.models'):
+		#to add in exception handling if possible
+		cidxJSON=files(idir)/'classIndex.json'
+		log.info(f'loading from {cidxJSON}')
+		with open(cidxJSON,mode='r',encoding='utf-8') as i:
+			self.cidx=json.load(i)
+
+		mfile=files(idir)/'cnnModel.pth'
+		log.info(f'loading from {mfile}')
+		model=torch.load(mfile,weights_only=False)
+
+		device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+		self.model=model.to(device)
+
+	def cnnPredict(self,img):
+		device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+		transform=cnnTransform()
+
+		img=Image.open(img).convert('L')
+		img=transform(img).unsqueeze(0).to(device)
+
+		self.model.eval()
+		with torch.no_grad():
+			o=self.model(img)
+			_,predicted=torch.max(o,1)
+
+		label=[k for k,v in self.cidx.items() if v==predicted.item()]
+		return label
 
 	def runCNN(self,ifile,odir='./captcha/output/'):
 		if os.path.exists(ifile):
@@ -210,5 +210,26 @@ def interactiveMode(odir):
 
 	log.info('Exiting...')
 
+def main():
+	parser=argparse.ArgumentParser(
+		description='Captcha',
+		add_help=True
+	)
+
+	parser.add_argument('img_path',help='Input image path')
+	parser.add_argument('save_path',help='Output save path')
+
+	parser.add_argument('--img_path',dest='img_path',help='Input image path (optional flag)',required=False)
+	parser.add_argument('--save_path',dest='save_path',help='Output save path (optional flag)',required=False)
+
+	args=parser.parse_args()
+
+	if args.img_path and args.save_path:
+		log.info(f'Processing {img_path}')
+		c=Captcha()
+		c(img_path,save_path)
+	else:
+		parser.error('Both img path and save path are required.')
+
 if __name__=='__main__':
-	interactiveMode('./output/')
+	main()
