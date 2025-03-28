@@ -1,13 +1,20 @@
+import os
+import json
+
 import torch
 from torch.utils.data import DataLoader,Dataset
 from torchvision import transforms,datasets
 
 from PIL import Image
-from .classes.cnnModel import CharClassifier
 
-from .init import *
+from captcha.configs.shared import GUID
+from captcha.configs.cleanup import CleanUpManager
+from captcha.configs.logging import get_logger
+from captcha.classes.cnnModel import CharClassifier
 
 tdata='./captcha/trainingdata/singleChar_Augment/'
+
+log=get_logger(__name__)
 
 def cnnTransform():
 	transform=transforms.Compose([
@@ -89,36 +96,6 @@ def cnnTrain(numClasses,trainLoader,valLoader):
 	
 	return model
 
-def loadCNNClassifier(idir='captcha.models'):
-	#to add in exception handling if possible
-	cidxJSON=files(idir)/'classIndex.json'
-	with open(cidxJSON,mode='r',encoding='utf-8') as i:
-		classIdx=json.load(i)
-
-	#model=CharClassifier(len(classIdx))
-	mfile=files(idir)/'cnnModel.pth'
-	model=torch.load(mfile,weights_only=False)
-
-	device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-	model=model.to(device)
-
-	return model,classIdx
-
-def cnnPredict(model,classIdx,img):
-	device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-	transform=cnnTransform()
-
-	img=Image.open(img).convert('L')
-	img=transform(img).unsqueeze(0).to(device)
-
-	model.eval()
-	with torch.no_grad():
-		o=model(img)
-		_,predicted=torch.max(o,1)
-
-	label=[k for k,v in classIdx.items() if v==predicted.item()]
-	return label
-
 def saveModel(model,classIdx,odir):
 	torch.save(model,f'{odir}/cnnModel.pth')
 	with open(f'{odir}/classIndex.json',mode='w',encoding='utf-8') as o:
@@ -140,13 +117,13 @@ def main(idir,odir):
 	saveModel(model,classIdx,odir)
 
     #save model within guid folder
-	odir=f'{odir}/{guid}/'
+	odir=f'{odir}/{GUID}/'
 	os.makedirs(odir,exist_ok=True)
 	saveModel(model,classIdx,odir)
 
 	return model
 
 if __name__ == "__main__":
-	log.info(f'Running training {guid}')
+	log.info(f'Running training {GUID}')
 	main(tdata,'./captcha/models/')
-	log.info(f'Training completed {guid}')
+	log.info(f'Training completed {GUID}')

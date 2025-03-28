@@ -1,9 +1,11 @@
 import cv2
 import pytesseract
 
-from .init import *
+from captcha.configs.logging import get_logger
 
 OCR_CONFIG=r'--psm 10 --oem 3 -c tessedit_char_whitelist=ABCDEFGHIJLKMNOPQRSTUVWXYZ0123456789'
+
+log=get_logger(__name__)
 
 def ocrImage(ifile):
 	if checkTesseract():

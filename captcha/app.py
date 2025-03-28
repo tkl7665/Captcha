@@ -1,10 +1,21 @@
+import os
+import json
+import argparse
+from importlib.resources import files
+
+import torch
 from PIL import Image
-from .ocr import ocrImage,checkTesseract
-from .trainCNN import *
 
-from .init import *
+from captcha.configs.shared import GUID
+from captcha.configs.cleanup import CleanUpManager
+from captcha.configs.logging import get_logger
+from captcha.configs.cleanup import CleanUpManager
 
-log=logging.getLogger(__name__)
+from captcha.ocr import ocrImage,checkTesseract
+from captcha.trainCNN import cnnTransform
+
+cleanup_mgr=CleanUpManager()
+log=get_logger(__name__)
 
 DEFAULT='CNN'
 TESSERACT=False
@@ -12,14 +23,14 @@ TESSERACT=False
 class Captcha(object):
 	def __init__(self):
 		log.info('Initializing CNN model...')
-		m,cidx=loadCNNClassifier()
-		self.model=m
-		self.cidx=cidx
-		log.info(f'Loaded CNN model with {cidx}')
+		self.cidx=None
+		self.model=None
+
+		self.loadCNNClassifier()
+		log.info(f'Loaded CNN model with {self.cidx}')
 
 	def __call__(self,im_path,save_path):
-		'''
-		Algo for inference
+		'''Algo for inference
 		args:
 			im_path: .jpg image path to load and to infer
 			save_path: output file path to save the one-line outcome
@@ -43,11 +54,44 @@ class Captcha(object):
 			log.warning(f'{im_path} not found')
 			text='N/A'
 
+		dir_path=os.path.dirname(save_path)
+		if dir_path:
+			os.makedirs(dir_path,exist_ok=True)
+
 		with open(save_path,mode='w',encoding='utf8') as f:
 			f.write(text)
 
 		log.info(f'Final Result: {text}')
 		return text
+
+	def loadCNNClassifier(self,idir='captcha.models'):
+		#to add in exception handling if possible
+		cidxJSON=files(idir)/'classIndex.json'
+		log.info(f'loading from {cidxJSON}')
+		with open(cidxJSON,mode='r',encoding='utf-8') as i:
+			self.cidx=json.load(i)
+
+		mfile=files(idir)/'cnnModel.pth'
+		log.info(f'loading from {mfile}')
+		model=torch.load(mfile,weights_only=False)
+
+		device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+		self.model=model.to(device)
+
+	def cnnPredict(self,img):
+		device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+		transform=cnnTransform()
+
+		img=Image.open(img).convert('L')
+		img=transform(img).unsqueeze(0).to(device)
+
+		self.model.eval()
+		with torch.no_grad():
+			o=self.model(img)
+			_,predicted=torch.max(o,1)
+
+		label=[k for k,v in self.cidx.items() if v==predicted.item()]
+		return label
 
 	def runCNN(self,ifile,odir='./captcha/output/'):
 		if os.path.exists(ifile):
@@ -61,30 +105,28 @@ class Captcha(object):
 	def predictLetters(self,lfiles):
 		pred=[]
 		for f in lfiles:
-			p=cnnPredict(self.model,self.cidx,f)
+			p=self.cnnPredict(f)
 			pred.append(p[0])
 
 		return ''.join(pred)
 
 	def cropImage(self,ifile,odir='./captcha/output/'):
-		global OFILE_LIST
 		if os.path.exists(ifile):
 			fname=os.path.basename(ifile)
 			img=Image.open(ifile)
 			cimg=img.crop((5,11,49,21))
 
 			os.makedirs(odir,exist_ok=True)
-			ofile=f'{odir}/{guid}_{fname}'
+			ofile=f'{odir}/{GUID}_{fname}'
 
 			cimg.save(ofile)
-			OFILE_LIST.append(ofile)
+			cleanup_mgr.add_temp_file(ofile)
 		else:
 			ofile=None
 
 		return ofile
 
 	def cropLetters(self,ifile,odir='./captcha/output/',length=5):
-		global OFILE_LIST
 		lfiles=[]
 
 		if os.path.exists(ifile):
@@ -97,18 +139,17 @@ class Captcha(object):
 				cimg=img.crop((x,0,x+8,img.height))
 				x+=9
 
-				ofile=f'{odir}/{guid}_{i}_{fname}'
+				ofile=f'{odir}/{GUID}_{i}_{fname}'
 				cimg.save(ofile)
 
 				lfiles.append(ofile)
-				OFILE_LIST.append(ofile)
+				cleanup_mgr.add_temp_file(ofile)
 		else:
 			save_path=None
 
 		return lfiles
 
 def initalize():
-	global TESSERACT
 	log.info('Initializing...')
 
 	log.info('Checking Tesseract...')
@@ -134,7 +175,7 @@ def interactiveMode(odir):
 	try:
 		initalize()
 		c=Captcha()
-		odir=f'{odir}/{guid}'
+		odir=f'{odir}/{GUID}'
 
 		os.makedirs(odir,exist_ok=True)
 		fpath=os.path.abspath(odir).replace('\\','/')
@@ -173,5 +214,25 @@ def interactiveMode(odir):
 
 	log.info('Exiting...')
 
+def main():
+	parser=argparse.ArgumentParser(
+		description='Captcha',
+		add_help=True
+	)
+
+	parser.add_argument('img_path',help='Input image path')
+	parser.add_argument('save_path',help='Output save path')
+
+	parser.add_argument('--img_path',dest='img_path',help='Input image path (optional flag)',required=False)
+	parser.add_argument('--save_path',dest='save_path',help='Output save path (optional flag)',required=False)
+
+	args=parser.parse_args()
+	if args.img_path and args.save_path:
+		log.info(f'Processing {args.img_path}')
+		c=Captcha()
+		c(args.img_path,args.save_path)
+	else:
+		parser.error('Both img path and save path are required.')
+
 if __name__=='__main__':
-	interactiveMode('./captcha/output/')
+	main()
