@@ -223,11 +223,10 @@ def main():
 	parser.add_argument('--save_path',dest='save_path',help='Output save path (optional flag)',required=False)
 
 	args=parser.parse_args()
-
 	if args.img_path and args.save_path:
-		log.info(f'Processing {img_path}')
+		log.info(f'Processing {args.img_path}')
 		c=Captcha()
-		c(img_path,save_path)
+		c(args.img_path,args.save_path)
 	else:
 		parser.error('Both img path and save path are required.')
 
