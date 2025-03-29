@@ -1,2 +1,0 @@
-./trainingdata/singleChar//0//0_c_input17.jpg
-./trainingdata/singleChar//0//0_c_input18.jpg

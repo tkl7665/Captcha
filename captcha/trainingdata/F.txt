@@ -1,1 +1,0 @@
-./trainingdata/singleChar//F//F_c_input24.jpg

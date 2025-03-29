@@ -1,6 +1,0 @@
-./trainingdata/singleChar//E//E_c_input00.jpg
-./trainingdata/singleChar//E//E_c_input12.jpg
-./trainingdata/singleChar//E//E_c_input19.jpg
-./trainingdata/singleChar//E//E_c_input20.jpg
-./trainingdata/singleChar//E//E_c_input22.jpg
-./trainingdata/singleChar//E//E_c_input23.jpg

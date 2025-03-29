@@ -2,7 +2,7 @@ from setuptools import setup,find_packages
 
 setup(
 	name='Captcha',
-	version='1.0.7',
+	version='1.0.8',
 	packages=find_packages(),
 	include_package_data=True,
 	package_data={
@@ -23,7 +23,6 @@ setup(
 		'mpmath',
 		'networkx',
 		'numpy',
-		'opencv-python',
 		'opencv-python-headless',
 		'packaging',
 		'pillow',
@@ -31,6 +30,7 @@ setup(
 		'pydantic',
 		'pydantic_core',
 		'pytesseract',
+		'pywin32',
 		'PyYAML',
 		'scipy',
 		'simsimd',
@@ -38,6 +38,7 @@ setup(
 		'sympy',
 		'torch',
 		'torchvision',
+		'typing-inspection',
 		'typing_extensions'
 	],
 	entry_points={

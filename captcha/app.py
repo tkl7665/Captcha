@@ -4,6 +4,7 @@ import argparse
 from importlib.resources import files
 
 import torch
+from torchvision import transforms
 from PIL import Image
 
 from captcha.configs.shared import GUID
@@ -12,7 +13,6 @@ from captcha.configs.logging import get_logger
 from captcha.configs.cleanup import CleanUpManager
 
 from captcha.ocr import ocrImage,checkTesseract
-from captcha.trainCNN import cnnTransform
 
 cleanup_mgr=CleanUpManager()
 log=get_logger(__name__)
@@ -148,6 +148,15 @@ class Captcha(object):
 			save_path=None
 
 		return lfiles
+
+def cnnTransform():
+	transform=transforms.Compose([
+		transforms.Grayscale(num_output_channels=1),
+		transforms.Resize((10,8)),
+		transforms.ToTensor(),
+		transforms.Normalize((0.5,),(0.5,))
+	])
+	return transform
 
 def initalize():
 	log.info('Initializing...')

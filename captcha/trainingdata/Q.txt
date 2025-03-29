@@ -1,5 +1,0 @@
-./trainingdata/singleChar//Q//Q_c_input05.jpg
-./trainingdata/singleChar//Q//Q_c_input07.jpg
-./trainingdata/singleChar//Q//Q_c_input08.jpg
-./trainingdata/singleChar//Q//Q_c_input12.jpg
-./trainingdata/singleChar//Q//Q_c_input17.jpg

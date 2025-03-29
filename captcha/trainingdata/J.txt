@@ -1,3 +1,0 @@
-./trainingdata/singleChar//J//J_c_input03.jpg
-./trainingdata/singleChar//J//J_c_input09.jpg
-./trainingdata/singleChar//J//J_c_input11.jpg
