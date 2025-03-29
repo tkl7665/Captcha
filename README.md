@@ -23,7 +23,7 @@ pip install git+https://github.com/tkl7665/Captcha.git
 
 ### Command Line
 ```bash
-captcha input100.jpg result100.txt
+captcha ./sample/input100.jpg ./output/result100.txt
 ```
 #### Example
 ```bash
@@ -146,8 +146,8 @@ Due to the limited number and unbalance between the number of samples for each c
 Including the original samples a total of 100 augmented samples were generated for each character.
 All training images can be found under ./trainingdata/singleChar_Augment
 
-## Tesseract 👁️
-As an immediate available algorithm Tesseract was used to extract the text from the captcha images. Read more about Tesseract [here](https://github.com/tesseract-ocr/tesseract).
+## EasyOCR 👁️
+As an immediate available algorithm EasyOCR was used to extract the text from the captcha images. Read more about it [here](https://github.com/JaidedAI/EasyOCR)
 
 ### Configuration ⚙️
 - psm 10: Treat each cropped region as a single character
@@ -157,13 +157,6 @@ As an immediate available algorithm Tesseract was used to extract the text from 
 ```bash
 --psm 10 --oem 3 -c tessedit_char_whitelist=ABCDEFGHIJLKMNOPQRSTUVWXYZ0123456789
 ```
-
-### Installation 📥
-Download and install Tesseract
-
-- **Windows**: Download the [Tesseract Installer](https://github.com/UB-Mannheim/tesseract/wiki)
-- **Mac**: `brew install tesseract`
-- **Linux**: `sudo apt install tesseract-ocr`om
 
 ## Future Areas of Improvements 🗺️
 - Leverage OpenCV to detect the contours of the characters within the Captcha and extract it out as an individual region
