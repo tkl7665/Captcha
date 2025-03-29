@@ -2,7 +2,7 @@ from setuptools import setup,find_packages
 
 setup(
 	name='Captcha',
-	version='1.0.13',
+	version='1.0.14',
 	packages=find_packages(),
 	include_package_data=True,
 	package_data={
@@ -30,8 +30,6 @@ setup(
 		'portalocker',
 		'pydantic',
 		'pydantic_core',
-		'pytesseract',
-		'pywin32',
 		'PyYAML',
 		'scipy',
 		'simsimd',
