@@ -15,94 +15,61 @@ The project leverages two established approaches to classify the characters with
 
 ## Installation 📥
 
-### Python Packages Dependencies 📦
 ```bash
-# Clone the repository
-git clone https://github.com/tkl7665/Captcha.git
-
-# Install the required packages
-pip install -r requirements.txt
+pip install git+https://github.com/tkl7665/Captcha.git
 ```
 
-## Quick Start 🚀 
+## Usage
 
-### Input
-- Currently the program is set to only process JPG files
-
-### Interactive Mode 💻
-The program also has an interactive mode that can be triggered via command line
-- Options
-    - '0': Quit
-    - 'd': Change default between OCR and CNN
-- Cleanup: Upon exiting the program will clean up and remove all interim images cropped and produced. All outputs would be maintained at the folder created during initialization
-
+### Command Line
 ```bash
-# virtual environment creation is recommended
-python .\app.py
-
-__main__ INFO Initializing...
-__main__ INFO Checking Tesseract...
-__main__ INFO Tesseract: True
-__main__ INFO Default: OCR
-__main__ INFO Initializing CNN model...
-
-# list of labels accompanying the trained model
-__main__ INFO Loaded CNN model with {'0': 0, '1': 1, '2': 2, '3': 3, ... , 'X': 33, 'Y': 34, 'Z': 35}
-__main__ INFO Saving Predictions at: C:/_tkl_mock/02_Work/06_Captcha/01_Dev/output/27ae
-
-# changing the default
-Enter image path (0 to quit <CNN>): d
-__main__ INFO Current Default is CNN
-Enter 1 for OCR, 2 for CNN:2
-__main__ INFO Updated Default: CNN
-
-# 1st prediction
-Enter image path (0 to quit <CNN>): ./samples/input/input100.jpg
-__main__ INFO OCR and CNN mismatched: YMB10 | YMB1Q
-__main__ INFO Using CNN as default
-
-# 2nd prediction
-Enter image path (0 to quit <CNN>): ./samples/input/input17.jpg
-__main__ INFO OCR and CNN matched
-__main__ INFO 20BHQ written to ./output//27ae/prediction_2.txt
-
-# Exiting
-Enter image path (0 to quit <CNN>): 0
-__main__ INFO Exiting...
-init INFO Doing cleanup
-
-# Listing of interim files generated and its deletion
-init INFO Generated ['./output//27ae_input100.jpg', './output//27ae_0_27ae_input100.jpg', ...]
-init INFO Removing ./output//27ae_input100.jpg
-.
-.
-.
-init INFO Removing ./output//27ae_4_27ae_input17.jpg
+captcha input100.jpg result100.txt
+```
+#### Example
+```bash
+captcha ..\input\input100.jpg ../output/result100.txt
+captcha.app INFO Processing ..\input\input100.jpg
+captcha.app INFO Initializing CNN model...
+captcha.app INFO loading from C:\_tkl_mock\02_Work\99_Test\t03\venv\lib\site-packages\captcha\models\classIndex.json
+captcha.app INFO loading from C:\_tkl_mock\02_Work\99_Test\t03\venv\lib\site-packages\captcha\models\cnnModel.pth
+captcha.app INFO Loaded CNN model with {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'A': 10, 'B': 11, 'C': 12, 'D': 13, 'E': 14, 'F': 15, 'G': 16, 'H': 17, 'I': 18, 'J': 19, 'K': 20, 'L': 21, 'M': 22, 'N': 23, 'O': 24, 'P': 25, 'Q': 26, 'R': 27, 'S': 28, 'T': 29, 'U': 30, 'V': 31, 'W': 32, 'X': 33, 'Y': 34, 'Z': 35}
+captcha.app INFO Using CNN result as Tesseract False
+captcha.app INFO Final Result: YMB1Q
+captcha.configs.cleanup INFO Starting cleanup
+captcha.configs.cleanup INFO Removing ./captcha/output//cd9a_1_cd9a_input100.jpg
+captcha.configs.cleanup INFO Removing ./captcha/output//cd9a_4_cd9a_input100.jpg
+captcha.configs.cleanup INFO Removing ./captcha/output//cd9a_2_cd9a_input100.jpg
+captcha.configs.cleanup INFO Removing ./captcha/output//cd9a_input100.jpg
+captcha.configs.cleanup INFO Removing ./captcha/output//cd9a_0_cd9a_input100.jpg
+captcha.configs.cleanup INFO Removing ./captcha/output//cd9a_3_cd9a_input100.jpg
 ```
 
-### Import Class 📂
-Import and create an instance of the Captcha class
+### Python
 ```python
-Python 3.10.5 (tags/v3.10.5:f377153, Jun  6 2022, 16:14:13) [MSC v.1929 64 bit (AMD64)] on win32
-Type "help", "copyright", "credits" or "license" for more information.
->>>
->>>
->>> from app import Captcha
->>> c=Captcha()
-app INFO Initializing CNN model...
-app INFO Loaded CNN model with {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'A': 10, 'B': 11, 'C': 12, 'D': 13, 'E': 14, 'F': 15, 'G': 16, 'H': 17, 'I': 18, 'J': 19, 'K': 20, 'L': 21, 'M': 22, 'N': 23, 'O': 24, 'P': 25, 'Q': 26, 'R': 27, 'S': 28, 'T': 29, 'U': 30, 'V': 31, 'W': 32, 'X': 33, 'Y': 34, 'Z': 35}
->>> c('./samples/input/input100.jpg','./output/prediction.txt')
-app INFO OCR and CNN mismatched: YMB10 | YMB1Q
-app INFO Using CNN as default
-'YMB1Q'
->>> c('./samples/input/input17.jpg','./output/prediction_17.txt')
-app INFO OCR and CNN matched
-'20BHQ'
->>>
+from captcha.app import interactiveMode
+interactiveMode('../output/')
 ```
 
-## Output
-The output would be both returned as a variable post calling the Captcha instance and will also be saved into a text file specified by the output argument.
+#### Example
+```python
+>>> from captcha.app import interactiveMode
+>>> interactiveMode('../output/')
+captcha.app INFO Initializing...
+captcha.app INFO Checking Tesseract...
+captcha.ocr WARNING Tesseract not found: tesseract is not installed or it is not in your PATH. See README file for more information.
+captcha.app INFO Tesseract: False
+captcha.app INFO Default: CNN
+captcha.app INFO Initializing CNN model...
+captcha.app INFO loading from C:\_tkl_mock\02_Work\06_Captcha\01_Dev\captcha\models\classIndex.json
+captcha.app INFO loading from C:\_tkl_mock\02_Work\06_Captcha\01_Dev\captcha\models\cnnModel.pth
+captcha.app INFO Loaded CNN model with {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'A': 10, 'B': 11, 'C': 12, 'D': 13, 'E': 14, 'F': 15, 'G': 16, 'H': 17, 'I': 18, 'J': 19, 'K': 20, 'L': 21, 'M': 22, 'N': 23, 'O': 24, 'P': 25, 'Q': 26, 'R': 27, 'S': 28, 'T': 29, 'U': 30, 'V': 31, 'W': 32, 'X': 33, 'Y': 34, 'Z': 35}
+captcha.app INFO Saving Predictions at: C:/_tkl_mock/02_Work/06_Captcha/output/6bf3
+Enter image path (0 to quit <CNN>): ../input/input100.jpg
+captcha.app INFO Using CNN result as Tesseract False
+captcha.app INFO Final Result: YMB1Q
+captcha.app INFO YMB1Q written to ../output//6bf3/prediction_1.txt
+Enter image path (0 to quit <CNN>):
+```
 
 ## CNN Model 🧠
 A Convolutional Neural Network (CNN) model was trained on the given samples to classify the characters within the Captcha images. The model commited within the code was trained without a GPU on augmented data due to the limited number of samples provided.

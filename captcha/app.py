@@ -232,9 +232,6 @@ def main():
 	parser.add_argument('img_path',help='Input image path')
 	parser.add_argument('save_path',help='Output save path')
 
-	parser.add_argument('--img_path',dest='img_path',help='Input image path (optional flag)',required=False)
-	parser.add_argument('--save_path',dest='save_path',help='Output save path (optional flag)',required=False)
-
 	args=parser.parse_args()
 	if args.img_path and args.save_path:
 		log.info(f'Processing {args.img_path}')
