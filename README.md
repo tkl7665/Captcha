@@ -149,15 +149,6 @@ All training images can be found under ./trainingdata/singleChar_Augment
 ## EasyOCR 👁️
 As an immediate available algorithm EasyOCR was used to extract the text from the captcha images. Read more about it [here](https://github.com/JaidedAI/EasyOCR)
 
-### Configuration ⚙️
-- psm 10: Treat each cropped region as a single character
-- oem 3: Use the defa ult OCR engine
-- tessedit_char_whitelist: Limit the characters to be recognized to uppercase alphabets and numerals
-
-```bash
---psm 10 --oem 3 -c tessedit_char_whitelist=ABCDEFGHIJLKMNOPQRSTUVWXYZ0123456789
-```
-
 ## Future Areas of Improvements 🗺️
 - Leverage OpenCV to detect the contours of the characters within the Captcha and extract it out as an individual region
 - Enable ensemble output to allow users to have more flexibility to choose between the results from CNN and Tesseract
