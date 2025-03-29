@@ -21,7 +21,17 @@ DEFAULT='CNN'
 TESSERACT=False
 
 class Captcha(object):
+	'''Captcha recognition model
+
+	Handles the loading of the CNN mode, and any OCR engines that are available
+
+	Attributes:
+		model (torch.nn.Module): Loaded recognition model
+		cidx (dict): Index and Character mapping for the CNN model
+	'''
 	def __init__(self):
+		'''Initialize Captcha classifier with trained model
+		'''
 		log.info('Initializing CNN model...')
 		self.cidx=None
 		self.model=None
@@ -29,9 +39,9 @@ class Captcha(object):
 		self.loadCNNClassifier()
 		log.info(f'Loaded CNN model with {self.cidx}')
 
-	def __call__(self,im_path,save_path):
-		'''Algo for inference
-		args:
+	def __call__(self,im_path:str,save_path:str)->str:
+		'''Calling the code for reference
+		Args:
 			im_path: .jpg image path to load and to infer
 			save_path: output file path to save the one-line outcome
 		'''
@@ -64,7 +74,13 @@ class Captcha(object):
 		log.info(f'Final Result: {text}')
 		return text
 
-	def loadCNNClassifier(self,idir='captcha.models'):
+	def loadCNNClassifier(self,idir:str='captcha.models')->None:
+		'''Load the classifier from the specified folder
+
+		Loads the model weights from a PyTorch checkpoint (.pth file) and corresponding class-to-index mapping from a JSON file.
+		Args:
+			idir(str):Python package path containing the model and index files.
+		'''
 		#to add in exception handling if possible
 		cidxJSON=files(idir)/'classIndex.json'
 		log.info(f'loading from {cidxJSON}')
@@ -78,7 +94,16 @@ class Captcha(object):
 		device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 		self.model=model.to(device)
 
-	def cnnPredict(self,img):
+	def cnnPredict(self,img:str)->str:
+		'''Predict a single character from the given image file
+
+		Loads the model weights from a PyTorch checkpoint (.pth file) and corresponding class-to-index mapping from a JSON file.
+		Args:
+			img(str):path to the given JPG file for prediction of a single character
+		Returns:
+			label(str):the predicted text by the model after mapping it to the class labels
+
+		'''
 		device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 		transform=cnnTransform()
 
@@ -93,7 +118,18 @@ class Captcha(object):
 		label=[k for k,v in self.cidx.items() if v==predicted.item()]
 		return label
 
-	def runCNN(self,ifile,odir='./captcha/output/'):
+	def runCNN(self,ifile:str,odir:str='./captcha/output/')->str:
+		'''Trigger function to classify all text within the given captcha image file
+
+		Load the given image, crop out individual letters based on the premise of 5 characters evenly spaced within the captcha, calls a prediction for each letter, finally returning the 5 characters prediction output
+
+		Args:
+			ifile(str):path to the given JPG file for prediction of a single captcha
+			odir(str):output folder to hold interim cropped images that will be deleted upon exit of the program
+
+		Returns:
+			pred(str):all 5 predicted letters
+		'''
 		if os.path.exists(ifile):
 			cimg=self.cropImage(ifile,odir)
 			lfiles=self.cropLetters(cimg,odir)
@@ -102,7 +138,17 @@ class Captcha(object):
 			pred='N/A'
 		return pred
 
-	def predictLetters(self,lfiles):
+	def predictLetters(self,lfiles:list)->str:
+		'''Trigger function to call the classification for each of the letters and consolidate the results together
+
+		Iterate through the list of given image files and call the classification for a single character
+
+		Args:
+			lfiles(list):List of strings containing the paths to the cropped images of individual letters
+
+		Returns:
+			str:sequential results of the prediction
+		'''
 		pred=[]
 		for f in lfiles:
 			p=self.cnnPredict(f)
@@ -110,7 +156,16 @@ class Captcha(object):
 
 		return ''.join(pred)
 
-	def cropImage(self,ifile,odir='./captcha/output/'):
+	def cropImage(self,ifile:str,odir:str='./captcha/output/')->str:
+		'''Crop the given image down to the region that contains the captcha text
+
+		Args:
+			ifile(str):Input image file the prediction is to be made
+			odir(str):Output folder at which the cropped image should be saved at
+
+		Returns:
+			ofile(str):Path to the output cropped image
+		'''
 		if os.path.exists(ifile):
 			fname=os.path.basename(ifile)
 			img=Image.open(ifile)
@@ -126,7 +181,17 @@ class Captcha(object):
 
 		return ofile
 
-	def cropLetters(self,ifile,odir='./captcha/output/',length=5):
+	def cropLetters(self,ifile:str,odir:str='./captcha/output/',length:int=5)->list:
+		'''Crop the given image to get the individual letters within the captcha
+
+		Args:
+			ifile(str):Input image file at which the letters are to be cropped from
+			odir(str):Output folder at which the cropped letters should be saved at
+			length(int):Number of letters to be cropped. defaulted at 8
+
+		Returns:
+			lfile(list):List containing the path to the individually cropped letters
+		'''
 		lfiles=[]
 
 		if os.path.exists(ifile):
@@ -150,6 +215,11 @@ class Captcha(object):
 		return lfiles
 
 def cnnTransform():
+	'''Form the transformer to be used 
+
+	Returns:
+		transform:to be used in transforming the image
+	'''
 	transform=transforms.Compose([
 		transforms.Grayscale(num_output_channels=1),
 		transforms.Resize((10,8)),
@@ -159,6 +229,7 @@ def cnnTransform():
 	return transform
 
 def initalize():
+	'''Initialization of basic items'''
 	log.info('Initializing...')
 
 	log.info('Checking Tesseract...')
@@ -224,6 +295,8 @@ def interactiveMode(odir):
 	log.info('Exiting...')
 
 def main():
+	'''Entry point for calling the Captcha classifier to process a given image file (.JPG only) and writes the output into the specified text file
+	'''
 	parser=argparse.ArgumentParser(
 		description='Captcha',
 		add_help=True
