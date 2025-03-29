@@ -22,7 +22,7 @@ pip install git+https://github.com/tkl7665/Captcha.git
 ## Usage
 
 ### Command Line
-Download the sample image input100.jpg [here]((https://raw.github.com/tkl7665/Captcha/master/sample/input100.jpg).
+Download the sample image input100.jpg [here](https://raw.github.com/tkl7665/Captcha/master/sample/input100.jpg).
 ```bash
 captcha input100.jpg result100.txt
 ```
