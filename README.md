@@ -1,8 +1,8 @@
 # Captcha by TKL
 
-A simple project that processes a given Captcha image and produces the results leverage a CNN classifier and OCR via Tesseract.
+A simple project that processes a given Captcha image and produces the results leverage a CNN classifier and OCR via EasyOCR.
 
-The project leverages two established approaches to classify the characters within the Captcha images. The first approach is a Convolutional Neural Network (CNN) model that was trained on the given samples. The second approach is to leverage Tesseract, an OCR engine, to extract the text from the Captcha images.
+The project leverages two established approaches to classify the characters within the Captcha images. The first approach is a Convolutional Neural Network (CNN) model that was trained on the given samples. The second approach is to leverage EasyOCR, an OCR engine, to extract the text from the Captcha images.
 
 ## Premise 🌟
 - The number of characters remains the same for all captchas
@@ -33,7 +33,6 @@ captcha.app INFO Initializing CNN model...
 captcha.app INFO loading from C:\_tkl_mock\02_Work\99_Test\t03\venv\lib\site-packages\captcha\models\classIndex.json
 captcha.app INFO loading from C:\_tkl_mock\02_Work\99_Test\t03\venv\lib\site-packages\captcha\models\cnnModel.pth
 captcha.app INFO Loaded CNN model with {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'A': 10, 'B': 11, 'C': 12, 'D': 13, 'E': 14, 'F': 15, 'G': 16, 'H': 17, 'I': 18, 'J': 19, 'K': 20, 'L': 21, 'M': 22, 'N': 23, 'O': 24, 'P': 25, 'Q': 26, 'R': 27, 'S': 28, 'T': 29, 'U': 30, 'V': 31, 'W': 32, 'X': 33, 'Y': 34, 'Z': 35}
-captcha.app INFO Using CNN result as Tesseract False
 captcha.app INFO Final Result: YMB1Q
 captcha.configs.cleanup INFO Starting cleanup
 captcha.configs.cleanup INFO Removing ./captcha/output//cd9a_1_cd9a_input100.jpg
@@ -54,18 +53,12 @@ interactiveMode('../output/')
 ```python
 >>> from captcha.app import interactiveMode
 >>> interactiveMode('../output/')
-captcha.app INFO Initializing...
-captcha.app INFO Checking Tesseract...
-captcha.ocr WARNING Tesseract not found: tesseract is not installed or it is not in your PATH. See README file for more information.
-captcha.app INFO Tesseract: False
-captcha.app INFO Default: CNN
 captcha.app INFO Initializing CNN model...
 captcha.app INFO loading from C:\_tkl_mock\02_Work\06_Captcha\01_Dev\captcha\models\classIndex.json
 captcha.app INFO loading from C:\_tkl_mock\02_Work\06_Captcha\01_Dev\captcha\models\cnnModel.pth
 captcha.app INFO Loaded CNN model with {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'A': 10, 'B': 11, 'C': 12, 'D': 13, 'E': 14, 'F': 15, 'G': 16, 'H': 17, 'I': 18, 'J': 19, 'K': 20, 'L': 21, 'M': 22, 'N': 23, 'O': 24, 'P': 25, 'Q': 26, 'R': 27, 'S': 28, 'T': 29, 'U': 30, 'V': 31, 'W': 32, 'X': 33, 'Y': 34, 'Z': 35}
 captcha.app INFO Saving Predictions at: C:/_tkl_mock/02_Work/06_Captcha/output/6bf3
 Enter image path (0 to quit <CNN>): ../input/input100.jpg
-captcha.app INFO Using CNN result as Tesseract False
 captcha.app INFO Final Result: YMB1Q
 captcha.app INFO YMB1Q written to ../output//6bf3/prediction_1.txt
 Enter image path (0 to quit <CNN>):
@@ -151,7 +144,7 @@ As an immediate available algorithm EasyOCR was used to extract the text from th
 
 ## Future Areas of Improvements 🗺️
 - Leverage OpenCV to detect the contours of the characters within the Captcha and extract it out as an individual region
-- Enable ensemble output to allow users to have more flexibility to choose between the results from CNN and Tesseract
+- Enable ensemble output to allow users to have more flexibility to choose between the results from CNN and EasyOCR
 - Flexibility in handling images with different number of characters returned
 - Generation of synthetic test & validation data for accuracy
 - Connecting with platforms like weights and biases (wand) for MLOPs which would provide better model version handling and loading
