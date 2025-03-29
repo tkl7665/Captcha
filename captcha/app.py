@@ -3,6 +3,7 @@ import json
 import argparse
 from importlib.resources import files
 
+import easyocr
 import torch
 from torchvision import transforms
 from PIL import Image
@@ -12,13 +13,12 @@ from captcha.configs.cleanup import CleanUpManager
 from captcha.configs.logging import get_logger
 from captcha.configs.cleanup import CleanUpManager
 
-from captcha.ocr import ocrImage,checkTesseract
+from captcha.ocr import runEasyOCR
 
 cleanup_mgr=CleanUpManager()
 log=get_logger(__name__)
 
 DEFAULT='CNN'
-TESSERACT=False
 
 class Captcha(object):
 	'''Captcha recognition model
@@ -39,6 +39,12 @@ class Captcha(object):
 		self.loadCNNClassifier()
 		log.info(f'Loaded CNN model with {self.cidx}')
 
+		self.reader=easyocr.Reader(
+			['en'],
+			gpu=False
+		)
+		log.info(f'Loaded EasyOCR')
+
 	def __call__(self,im_path:str,save_path:str)->str:
 		'''Calling the code for reference
 		Args:
@@ -47,19 +53,15 @@ class Captcha(object):
 		'''
 		if os.path.exists(im_path):
 			ptext=self.runCNN(im_path)
-			otext=ocrImage(im_path) if TESSERACT else ptext
+			otext=self.runEasyOCR(im_path)
 
-			if TESSERACT:
-				if otext==ptext:
-					text=otext
-					log.info('OCR and CNN matched')
-				else:
-					log.info(f'OCR and CNN mismatched: {otext} | {ptext}')
-					log.info(f'Using {DEFAULT} as default')
-					text=otext if DEFAULT=='OCR' else ptext
+			if otext==ptext:
+				text=otext
+				log.info('OCR and CNN matched')
 			else:
-				text=ptext
-				log.info(f'Using CNN result as Tesseract {TESSERACT}')
+				log.info(f'OCR and CNN mismatched: {otext} | {ptext}')
+				log.info(f'Using {DEFAULT} as default')
+				text=otext if DEFAULT=='OCR' else ptext
 		else:
 			log.warning(f'{im_path} not found')
 			text='N/A'
@@ -73,6 +75,23 @@ class Captcha(object):
 
 		log.info(f'Final Result: {text}')
 		return text
+
+	def runEasyOCR(self,ifile:str)->str:
+		'''Call easyocr to perform OCR on the given image file
+
+		Args:
+			ifile(str):path to the given JPG file for OCR
+		Returns:
+			result(str):the predicted text by easy OCR
+		'''
+		result=self.reader.readtext(
+			ifile,
+			decoder='greedy',
+			batch_size=1,
+			detail=0,
+			allowlist='ABCDEFGHIJLKMNOPQRSTUVWXYZ0123456789'
+		)[0]
+		return result
 
 	def loadCNNClassifier(self,idir:str='captcha.models')->None:
 		'''Load the classifier from the specified folder
@@ -228,17 +247,6 @@ def cnnTransform():
 	])
 	return transform
 
-def initalize():
-	'''Initialization of basic items'''
-	log.info('Initializing...')
-
-	log.info('Checking Tesseract...')
-	TESSERACT=checkTesseract()
-
-	log.info(f'Tesseract: {TESSERACT}')
-	DEFAULT='OCR' if TESSERACT else 'CNN'
-	log.info(f'Default: {DEFAULT}')
-
 def changeDefault():
 	global DEFAULT
 	choice=input('Enter 1 for OCR, 2 for CNN:').lower().strip()
@@ -253,7 +261,6 @@ def changeDefault():
 
 def interactiveMode(odir):
 	try:
-		initalize()
 		c=Captcha()
 		odir=f'{odir}/{GUID}'
 
