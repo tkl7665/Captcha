@@ -13,8 +13,6 @@ from captcha.configs.cleanup import CleanUpManager
 from captcha.configs.logging import get_logger
 from captcha.configs.cleanup import CleanUpManager
 
-from captcha.ocr import runEasyOCR
-
 cleanup_mgr=CleanUpManager()
 log=get_logger(__name__)
 
